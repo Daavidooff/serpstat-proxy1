@@ -1,8 +1,10 @@
+require('dotenv').config(); // ← обов’язково для зчитування .env
+
 const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');
 
-const app = express();           // Обов’язково має бути перед використанням app
+const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
@@ -10,6 +12,9 @@ app.use(express.json());
 
 const SERPSTAT_API_URL = 'https://api.serpstat.com/v4';
 const SERPSTAT_TOKEN = process.env.SERPSTAT_TOKEN;
+
+// Перевіряємо, чи токен зчитано
+console.log('🛠️ Loaded SERPSTAT_TOKEN:', SERPSTAT_TOKEN ? '✅ OK' : '❌ MISSING');
 
 app.post('/proxy', async (req, res) => {
     if (!SERPSTAT_TOKEN) {
@@ -25,7 +30,7 @@ app.post('/proxy', async (req, res) => {
             method: req.body.method,
             params: {
                 ...(req.body.params || {}),
-                token: SERPSTAT_TOKEN
+                token: SERPSTAT_TOKEN // ← токен обов’язково в params!
             }
         };
 
@@ -61,5 +66,5 @@ app.post('/proxy', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Proxy server running on port ${port}`);
+    console.log(`🚀 Proxy server running on port ${port}`);
 });
