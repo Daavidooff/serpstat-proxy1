@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const SERPSTAT_API_URL = 'https://api.serpstat.com/v3';
+const SERPSTAT_API_URL = 'https://api.serpstat.com/v4';
 const SERPSTAT_TOKEN = process.env.SERPSTAT_TOKEN;
 
 app.post('/proxy', async (req, res) => {
