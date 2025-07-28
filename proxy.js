@@ -1,35 +1,60 @@
+```javascript
 const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');
-const app = express();
 
-app.use(cors()); // Додаємо CORS
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
 app.use(express.json());
 
+const SERPSTAT_API_URL = 'https://api.serpstat.com/v3';
+const SERPSTAT_TOKEN = process.env.SERPSTAT_TOKEN;
+
 app.post('/proxy', async (req, res) => {
+    if (!SERPSTAT_TOKEN) {
+        console.error('Proxy error: SERPSTAT_TOKEN not set');
+        return res.status(500).json({ error: 'Server configuration error: API token missing' });
+    }
+
     try {
-        const token = process.env.SERPSTAT_TOKEN;
-        if (!token) {
-            throw new Error('SERPSTAT_TOKEN not set in environment variables');
-        }
-        console.log('Request body:', req.body); // Логування запиту
-        const response = await fetch(`https://api.serpstat.com/v4/?token=${token}`, {
+        console.log('Request body:', JSON.stringify(req.body, null, 2));
+
+        const requestBody = {
+            id: req.body.id,
+            method: req.body.method,
+            params: {
+                ...req.body.params,
+                token: SERPSTAT_TOKEN
+            }
+        };
+
+        const response = await fetch(SERPSTAT_API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.body)
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
         });
-        const responseText = await response.text();
-        console.log('Serpstat response:', responseText); // Логування відповіді
+
+        const data = await response.json();
+        console.log('Serpstat response:', JSON.stringify(data, null, 2));
+
         if (!response.ok) {
-            throw new Error(`Serpstat API error: ${response.status}. Details: ${responseText}`);
+            console.error(`Proxy error: HTTP ${response.status}, Response: ${JSON.stringify(data)}`);
+            return res.status(response.status).json(data);
         }
-        const data = JSON.parse(responseText);
+
         res.json(data);
     } catch (error) {
-        console.error('Proxy error:', error.message); // Логування помилки
-        res.status(500).json({ error: error.message });
+        console.error('Proxy error:', error.message, 'Stack:', error.stack);
+        res.status(500).json({ error: `Proxy error: ${error.message}` });
     }
 });
 
-const port = process.env.PORT || 10000;
-app.listen(port, () => console.log(`Proxy running on port ${port}`));
+app.listen(port, () => {
+    console.log(`Proxy server running on port ${port}`);
+});
+```
