@@ -21,7 +21,7 @@ app.post('/proxy', async (req, res) => {
     }
 
     try {
-        console.log('📩 Request body:', JSON.stringify(req.body, null, 2));
+        console.log('📩 Request body from client:', JSON.stringify(req.body, null, 2));
 
         const requestBody = {
             id: req.body.id,
@@ -31,6 +31,17 @@ app.post('/proxy', async (req, res) => {
                 token: SERPSTAT_TOKEN
             }
         };
+
+        // Логування повного запиту до Serpstat
+        console.log('📤 Full request to Serpstat:', {
+            url: SERPSTAT_API_URL,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
 
         const response = await fetch(SERPSTAT_API_URL, {
             method: 'POST',
