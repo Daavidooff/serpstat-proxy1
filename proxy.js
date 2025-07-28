@@ -1,16 +1,3 @@
-const express = require('express');
-const fetch = require('node-fetch');
-const cors = require('cors');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-const SERPSTAT_API_URL = 'https://api.serpstat.com/v4';
-const SERPSTAT_TOKEN = process.env.SERPSTAT_TOKEN;
-
 app.post('/proxy', async (req, res) => {
     if (!SERPSTAT_TOKEN) {
         console.error('Proxy error: SERPSTAT_TOKEN not set');
@@ -20,13 +7,15 @@ app.post('/proxy', async (req, res) => {
     try {
         console.log('Request body:', JSON.stringify(req.body, null, 2));
 
-       const requestBody = {
-  id: req.body.id,
-  method: req.body.method,
-  params: req.body.params || {},
-  token: SERPSTAT_TOKEN
-};
-
+        // Важливо: токен має бути всередині params
+        const requestBody = {
+            id: req.body.id,
+            method: req.body.method,
+            params: {
+                ...(req.body.params || {}),
+                token: SERPSTAT_TOKEN
+            }
+        };
 
         const response = await fetch(SERPSTAT_API_URL, {
             method: 'POST',
@@ -40,6 +29,14 @@ app.post('/proxy', async (req, res) => {
         const data = await response.json();
         console.log('Serpstat response:', JSON.stringify(data, null, 2));
 
+        // Ось тут додаємо перевірку ліміту
+        if (data?.result?.remaining_credits === 0) {
+            console.warn('No remaining credits');
+            return res.status(429).json({
+                error: 'Ліміт запитів до API вичерпано. Спробуйте пізніше.'
+            });
+        }
+
         if (!response.ok) {
             console.error(`Proxy error: HTTP ${response.status}, Response: ${JSON.stringify(data)}`);
             return res.status(response.status).json(data);
@@ -50,8 +47,4 @@ app.post('/proxy', async (req, res) => {
         console.error('Proxy error:', error.message, 'Stack:', error.stack);
         res.status(500).json({ error: `Proxy error: ${error.message}` });
     }
-});
-
-app.listen(port, () => {
-    console.log(`Proxy server running on port ${port}`);
 });
