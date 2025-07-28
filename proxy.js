@@ -20,14 +20,13 @@ app.post('/proxy', async (req, res) => {
     try {
         console.log('Request body:', JSON.stringify(req.body, null, 2));
 
-        const requestBody = {
-            id: req.body.id,
-            method: req.body.method,
-            params: {
-                ...req.body.params,
-                token: SERPSTAT_TOKEN
-            }
-        };
+       const requestBody = {
+  id: req.body.id,
+  method: req.body.method,
+  params: req.body.params || {},
+  token: SERPSTAT_TOKEN
+};
+
 
         const response = await fetch(SERPSTAT_API_URL, {
             method: 'POST',
