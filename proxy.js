@@ -43,6 +43,14 @@ app.post('/proxy', async (req, res) => {
             body: JSON.stringify(requestBody)
         });
 
+        // Перевірка валідності JSON
+        try {
+            JSON.parse(JSON.stringify(requestBody));
+        } catch (jsonError) {
+            console.error('Invalid JSON format:', jsonError.message);
+            return res.status(400).json({ error: 'Invalid JSON format in request body' });
+        }
+
         const response = await fetch(SERPSTAT_API_URL, {
             method: 'POST',
             headers: {
@@ -58,6 +66,11 @@ app.post('/proxy', async (req, res) => {
         if (data?.error?.code === 32000) {
             console.error('API error: Missing or invalid token');
             return res.status(400).json({ error: 'Invalid or missing API token. Please verify SERPSTAT_TOKEN.' });
+        }
+
+        if (data?.error?.code === 403) {
+            console.error('API error: Authorization issue');
+            return res.status(403).json({ error: 'Authorization error: Invalid token or restricted account access.' });
         }
 
         if (data?.result?.remaining_credits === 0) {
