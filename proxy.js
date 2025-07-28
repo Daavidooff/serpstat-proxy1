@@ -1,5 +1,3 @@
-require('dotenv').config(); // Для локального зчитування .env
-
 const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');
