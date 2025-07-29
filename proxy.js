@@ -26,10 +26,7 @@ app.post('/proxy', async (req, res) => {
         const requestBody = {
             id: req.body.id,
             method: req.body.method,
-            params: {
-                ...(req.body.params || {}),
-                token: SERPSTAT_TOKEN
-            }
+            params: req.body.params || {}
         };
 
         // Логування повного запиту до Serpstat
@@ -38,7 +35,8 @@ app.post('/proxy', async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': `Token ${SERPSTAT_TOKEN}`
             },
             body: JSON.stringify(requestBody)
         });
@@ -55,7 +53,8 @@ app.post('/proxy', async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': `Token ${SERPSTAT_TOKEN}`
             },
             body: JSON.stringify(requestBody)
         });
