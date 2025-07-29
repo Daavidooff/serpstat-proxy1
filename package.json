@@ -1,14 +1,14 @@
 {
-  "name": "serpstat-proxy",
-  "version": "1.0.0",
-  "description": "Proxy server for Serpstat API",
-  "main": "proxy.js",
-  "scripts": {
-    "start": "node proxy.js"
-  },
-  "dependencies": {
-    "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
-    "cors": "^2.8.5"
-  }
+    "name": "serpstat-proxy",
+    "version": "1.0.0",
+    "description": "Proxy for Serpstat API",
+    "main": "proxy.js",
+    "scripts": {
+        "start": "node proxy.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "node-fetch": "^2.6.1",
+        "cors": "^2.8.5"
+    }
 }
