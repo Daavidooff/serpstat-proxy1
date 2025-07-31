@@ -1,6 +1,5 @@
-```javascript
 const express = require('express');
-const fetch = require('node-fetch');
+const fetch = require('node-fetch').default; // Явний імпорт default для node-fetch@2
 const axios = require('axios');
 const cors = require('cors');
 const app = express();
@@ -51,4 +50,3 @@ app.post('/fetch-page', async (req, res) => {
 
 const port = process.env.PORT || 10000;
 app.listen(port, () => console.log(`Proxy running on port ${port}`));
-```
