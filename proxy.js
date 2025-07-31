@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
@@ -28,6 +29,22 @@ app.post('/proxy', async (req, res) => {
     } catch (error) {
         console.error('Proxy error:', error.message);
         res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/fetch-page', async (req, res) => {
+    const { url } = req.body;
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
+            timeout: 10000 // 10 секунд таймаут
+        });
+        res.send(response.data);
+    } catch (error) {
+        console.error(`Error fetching ${url}: ${error.message}`);
+        res.status(500).json({ error: 'Не вдалося отримати сторінку' });
     }
 });
 
