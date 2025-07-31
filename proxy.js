@@ -1,3 +1,4 @@
+```javascript
 const express = require('express');
 const fetch = require('node-fetch');
 const axios = require('axios');
@@ -48,5 +49,6 @@ app.post('/fetch-page', async (req, res) => {
     }
 });
 
-const port = process.env.PORT || 50000;
+const port = process.env.PORT || 10000;
 app.listen(port, () => console.log(`Proxy running on port ${port}`));
+```
